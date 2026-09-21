@@ -1,45 +1,243 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LazyVim keymap atlas</title>
-  <meta name="description" content="An offline, mode-aware reference for the LazyVim keyboard configuration.">
-  <style>
-    :root { --bg:#10131a; --panel:#171c26; --panel2:#1d2430; --text:#e9edf4; --muted:#9aa6b8; --line:#2c3545; --cyan:#7dd3fc; --green:#a7f3d0; --amber:#fcd38a; --pink:#f9a8d4; --purple:#c4b5fd; font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    * { box-sizing:border-box; } body { margin:0; background:radial-gradient(circle at 80% -10%,#263552 0,transparent 38%),var(--bg); color:var(--text); line-height:1.5; }
-    .wrap { max-width:1180px; margin:auto; padding:42px 22px 70px; } header { display:flex; justify-content:space-between; gap:24px; align-items:end; margin-bottom:34px; }
-    .eyebrow { color:var(--cyan); font-weight:700; letter-spacing:.13em; text-transform:uppercase; font-size:.76rem; } h1 { font-size:clamp(2.3rem,6vw,5rem); line-height:.95; margin:10px 0 14px; letter-spacing:-.06em; max-width:700px; } .lede { color:var(--muted); max-width:660px; margin:0; font-size:1.06rem; }
-    .badge { border:1px solid var(--line); background:#121822aa; padding:12px 14px; border-radius:12px; color:var(--muted); font-size:.82rem; white-space:nowrap; } .badge strong { color:var(--green); display:block; font-size:1rem; }
-    .toolbar { position:sticky; top:10px; z-index:2; display:flex; flex-wrap:wrap; gap:10px; padding:12px; background:#10131ae8; backdrop-filter:blur(14px); border:1px solid var(--line); border-radius:14px; margin-bottom:24px; } input,button { font:inherit; } input { flex:1 1 220px; min-width:180px; background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:10px 12px; outline:none; } input:focus { border-color:var(--cyan); } button { cursor:pointer; color:var(--muted); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:9px 13px; } button.active,button:hover { color:var(--bg); background:var(--cyan); border-color:var(--cyan); }
-    .legend { display:flex; gap:15px; flex-wrap:wrap; color:var(--muted); font-size:.83rem; margin:14px 2px 25px; } .dot { width:9px; height:9px; display:inline-block; border-radius:50%; margin-right:5px; } .local{color:var(--amber)} .lazy{color:var(--purple)} .native{color:var(--green)} .plugin{color:var(--pink)}
-    .section { margin:30px 0 38px; } .section-head { display:flex; align-items:baseline; justify-content:space-between; border-bottom:1px solid var(--line); margin-bottom:14px; } h2 { font-size:1.45rem; margin:0 0 10px; letter-spacing:-.025em; } .count { color:var(--muted); font-size:.8rem; }
-    .cards { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; } .card { background:linear-gradient(145deg,var(--panel),#141923); border:1px solid var(--line); border-left:3px solid currentColor; border-radius:10px; padding:14px 15px; min-height:110px; } .card[hidden] { display:none; } .keys { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; } kbd { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; color:var(--text); background:var(--panel2); border:1px solid #435066; border-bottom-width:2px; border-radius:5px; padding:2px 7px; font-size:.84rem; } .action { font-weight:650; } .meta { color:var(--muted); font-size:.78rem; margin-top:6px; } .mode { color:inherit; font-weight:700; text-transform:uppercase; letter-spacing:.08em; }
-    .keyboard { display:grid; grid-template-columns:repeat(12,1fr); gap:7px; margin:15px 0 8px; } .key { min-height:45px; display:flex; align-items:center; justify-content:center; background:var(--panel); border:1px solid var(--line); border-radius:7px; color:var(--muted); font-family:ui-monospace,monospace; font-size:.82rem; } .key.hot { color:var(--cyan); border-color:#39718a; background:#18303c; } .caption { color:var(--muted); font-size:.8rem; }
-    details { border:1px solid var(--line); border-radius:10px; background:#141923; padding:14px 16px; margin-top:18px; } summary { cursor:pointer; color:var(--cyan); font-weight:650; } details p { color:var(--muted); max-width:850px; } footer { border-top:1px solid var(--line); color:var(--muted); padding-top:18px; font-size:.82rem; } a { color:var(--cyan); }
-    @media (max-width:650px) { .wrap{padding:28px 14px 50px} header{display:block}.badge{display:inline-block;margin-top:20px}.toolbar{position:static}.keyboard{gap:4px}.key{min-height:38px;font-size:.7rem}.cards{grid-template-columns:1fr} }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LazyVim keymap keyboard</title>
+<meta name="description" content="An offline LazyVim and Neovim shortcut map on a standard MacBook keyboard.">
+<link rel="stylesheet" href="css/stijl.css">
+<link rel="stylesheet" href="css/lazyvim.css">
 </head>
 <body>
-<main class="wrap">
-  <header><div><div class="eyebrow">mode-aware reference · offline</div><h1>LazyVim<br>keymap atlas</h1><p class="lede">A compact map of the keys that move, edit, search and compose inside this Neovim setup. Start with a mode, then search by key, action or source.</p></div><div class="badge"><strong>40 mappings</strong>config snapshot · 2026-09</div></header>
-  <nav class="toolbar" aria-label="Filter shortcuts"><input id="search" type="search" placeholder="Search a key, action, plugin…" aria-label="Search mappings"><button class="active" data-mode="all">All</button><button data-mode="n">Normal</button><button data-mode="v">Visual</button><button data-mode="i">Insert</button><button data-mode="o">Operator</button><button data-mode="c">Command</button></nav>
-  <div class="legend"><span><i class="dot local"></i>Local config</span><span><i class="dot lazy"></i>LazyVim default</span><span><i class="dot native"></i>Neovim native</span><span><i class="dot plugin"></i>Plugin</span></div>
-  <section class="section"><div class="section-head"><h2>Local config</h2><span class="count">lua/config/keymaps.lua + plugins/render-markdown.lua</span></div><div class="cards" id="local"></div></section>
-  <section class="section"><div class="section-head"><h2>LazyVim core defaults</h2><span class="count">common discoverable actions</span></div><div class="cards" id="lazy"></div></section>
-  <section class="section"><div class="section-head"><h2>Native modal grammar</h2><span class="count">Neovim essentials · no custom binding</span></div><div class="cards" id="native"></div></section>
-  <section class="section"><h2>The modal keyboard</h2><div class="keyboard" aria-label="Keyboard overview"><span class="key hot">Esc</span><span class="key">Q</span><span class="key">W</span><span class="key">E</span><span class="key">R</span><span class="key">T</span><span class="key">Y</span><span class="key">U</span><span class="key">I</span><span class="key">O</span><span class="key">P</span><span class="key hot">:</span><span class="key">A</span><span class="key">S</span><span class="key hot">D</span><span class="key">F</span><span class="key">G</span><span class="key hot">H</span><span class="key hot">J</span><span class="key hot">K</span><span class="key hot">L</span><span class="key">;</span><span class="key">'</span><span class="key">Z</span><span class="key">X</span><span class="key">C</span><span class="key">V</span><span class="key">B</span><span class="key">N</span><span class="key">M</span><span class="key">,</span><span class="key">.</span><span class="key">/</span></div><p class="caption">Blue keys call out frequently remapped or mode-defining controls. The atlas below is the source of truth for actions.</p></section>
-  <details><summary>How to read this map</summary><p><b>Normal</b> navigates and invokes commands. <b>Insert</b> types text. <b>Visual</b> acts on a selection. <b>Operator-pending</b> is the interval after an operator such as <code>d</code> or <code>c</code>. <b>Command-line</b> is the <code>:</code>, <code>/</code> and <code>?</code> prompt. A mapping marked Local is explicitly present in the captured config; LazyVim defaults are kept separate. Plugin mappings may only exist after that plugin loads.</p></details>
-  <footer>Snapshot source: <code>~/.config/nvim</code>, LazyVim pinned at <code>c10948c</code>. See <a href="README.md">README.md</a> for update and coverage notes.</footer>
-</main>
+<div id="main" role="main">
+  <div id="controls" aria-label="Shortcut map controls">
+    <div class="control-group">
+      <label for="source">Source</label>
+      <select id="source" aria-label="Shortcut source">
+        <option value="local">Local</option>
+        <option value="lazy">LazyVim</option>
+        <option value="native">Neovim Native</option>
+      </select>
+    </div>
+    <div class="rule" aria-hidden="true"></div>
+    <div class="control-group" role="group" aria-label="Mode">
+      <label>Mode</label>
+      <button type="button" data-mode="n" class="active">Normal</button>
+      <button type="button" data-mode="v">Visual</button>
+      <button type="button" data-mode="i">Insert</button>
+      <button type="button" data-mode="o">Operator</button>
+      <button type="button" data-mode="c">Command</button>
+    </div>
+    <div class="control-group">
+      <label for="layer">Layer</label>
+      <select id="layer" aria-label="Shortcut layer"></select>
+    </div>
+    <input id="search" type="search" aria-label="Search shortcuts" placeholder="Search key or action">
+  </div>
+
+  <ol id="keyboard" class="macbook-pro" aria-label="MacBook keyboard shortcut map">
+    <li id="esc" data-key="esc" data-default="esc">esc</li>
+    <li id="f1" data-key="f1" data-default="F1">F1</li>
+    <li id="f2" data-key="f2" data-default="F2">F2</li>
+    <li id="f3" data-key="f3" data-default="F3">F3</li>
+    <li id="f4" data-key="f4" data-default="F4">F4</li>
+    <li id="f5" data-key="f5" data-default="F5">F5</li>
+    <li id="f6" data-key="f6" data-default="F6">F6</li>
+    <li id="f7" data-key="f7" data-default="F7">F7</li>
+    <li id="f8" data-key="f8" data-default="F8">F8</li>
+    <li id="f9" data-key="f9" data-default="F9">F9</li>
+    <li id="f10" data-key="f10" data-default="F10">F10</li>
+    <li id="f11" data-key="f11" data-default="F11">F11</li>
+    <li id="f12" data-key="f12" data-default="F12">F12</li>
+    <li data-key="eject" data-default=""></li>
+
+    <li id="grave" data-key="grave" data-default="~`"><span>~</span>`</li>
+    <li id="1" data-key="1" data-default="!1"><span>!</span>1</li>
+    <li id="2" data-key="2" data-default="@2"><span>@</span>2</li>
+    <li id="3" data-key="3" data-default="#3"><span>#</span>3</li>
+    <li id="4" data-key="4" data-default="$4"><span>$</span>4</li>
+    <li id="5" data-key="5" data-default="%5"><span>%</span>5</li>
+    <li id="6" data-key="6" data-default="^6"><span>^</span>6</li>
+    <li id="7" data-key="7" data-default="&amp;7"><span>&amp;</span>7</li>
+    <li id="8" data-key="8" data-default="*8"><span>*</span>8</li>
+    <li id="9" data-key="9" data-default="(9"><span>(</span>9</li>
+    <li id="0" data-key="0" data-default=")0"><span>)</span>0</li>
+    <li id="minus" data-key="minus" data-default="_-"><span>_</span>-</li>
+    <li id="equal" data-key="equal" data-default="+="><span>+</span>=</li>
+    <li class="special r" id="delete" data-key="delete" data-default="⌫">⌫</li>
+
+    <li class="special l" id="tab" data-key="tab" data-default="⇥">⇥</li>
+    <li id="q" data-key="q" data-default="Q">Q</li>
+    <li id="w" data-key="w" data-default="W">W</li>
+    <li id="e" data-key="e" data-default="E">E</li>
+    <li id="r" data-key="r" data-default="R">R</li>
+    <li id="t" data-key="t" data-default="T">T</li>
+    <li id="y" data-key="y" data-default="Y">Y</li>
+    <li id="u" data-key="u" data-default="U">U</li>
+    <li id="i" data-key="i" data-default="I">I</li>
+    <li id="o" data-key="o" data-default="O">O</li>
+    <li id="p" data-key="p" data-default="P">P</li>
+    <li id="left-bracket" data-key="left-bracket" data-default="{["><span>{</span>[</li>
+    <li id="right-bracket" data-key="right-bracket" data-default="}]"><span>}</span>]</li>
+    <li id="backslash" data-key="backslash" data-default="|\"><span>|</span>\</li>
+
+    <li class="special l" id="caps-lock" data-key="caps-lock" data-default="Caps Lock">Caps Lock</li>
+    <li id="a" data-key="a" data-default="A">A</li>
+    <li id="s" data-key="s" data-default="S">S</li>
+    <li id="d" data-key="d" data-default="D">D</li>
+    <li id="f" data-key="f" data-default="F">F</li>
+    <li id="g" data-key="g" data-default="G">G</li>
+    <li id="h" data-key="h" data-default="H">H</li>
+    <li id="j" data-key="j" data-default="J">J</li>
+    <li id="k" data-key="k" data-default="K">K</li>
+    <li id="l" data-key="l" data-default="L">L</li>
+    <li id="semicolon" data-key="semicolon" data-default=":;"><span>:</span>;</li>
+    <li id="quote" data-key="quote" data-default="&quot;'"><span>"</span>'</li>
+    <li class="special r" id="enter" data-key="enter" data-default="⏎">⏎</li>
+
+    <li class="special shift l" id="left-shift" data-key="left-shift" data-default="⇧">⇧</li>
+    <li id="z" data-key="z" data-default="Z">Z</li>
+    <li id="x" data-key="x" data-default="X">X</li>
+    <li id="c" data-key="c" data-default="C">C</li>
+    <li id="v" data-key="v" data-default="V">V</li>
+    <li id="b" data-key="b" data-default="B">B</li>
+    <li id="n" data-key="n" data-default="N">N</li>
+    <li id="m" data-key="m" data-default="M">M</li>
+    <li id="comma" data-key="comma" data-default="&lt;,"><span>&lt;</span>,</li>
+    <li id="period" data-key="period" data-default="&gt;."><span>&gt;</span>.</li>
+    <li id="slash" data-key="slash" data-default="?/"> <span>?</span>/</li>
+    <li class="special shift r" id="right-shift" data-key="right-shift" data-default="⇧">⇧</li>
+
+    <li class="special tall l" id="fn" data-key="fn" data-default="fn">fn</li>
+    <li class="special tall less-padding l" id="control" data-key="control" data-default="⌃control"><span>⌃</span>control</li>
+    <li class="special tall less-padding l" id="option-left" data-key="option-left" data-default="⌥option"><span>⌥</span>option</li>
+    <li class="special tall command l" id="command-left" data-key="command-left" data-default="⌘command"><span>⌘</span>command</li>
+    <li class="special tall" id="space" data-key="space" data-default=" "> </li>
+    <li class="special tall command r" id="command-right" data-key="command-right" data-default="⌘command"><span>⌘</span>command</li>
+    <li class="special tall less-padding r" id="option-right" data-key="option-right" data-default="⌥option"><span>⌥</span>option</li>
+    <li class="arrow up" id="arrow-up" data-key="arrow-up" data-default="↑">&#8593;</li>
+    <li class="arrow" id="arrow-left" data-key="arrow-left" data-default="←">&#8592;</li>
+    <li class="arrow down" id="arrow-down" data-key="arrow-down" data-default="↓">&#8595;</li>
+    <li class="arrow" id="arrow-right" data-key="arrow-right" data-default="→">&#8594;</li>
+  </ol>
+
+  <div id="readout" aria-live="polite"><strong id="state">Local · Normal · Base</strong><span id="matches"></span></div>
+</div>
 <script>
-const data={
- local:[['n','H','First non-blank character','Local config · keymaps.lua'],['n','L','End of line','Local config · keymaps.lua'],['v','H','First non-blank character','Local config · keymaps.lua'],['v','L','End of line','Local config · keymaps.lua'],['n','J','Move down 5 lines','Local config · keymaps.lua'],['n','K','Move up 5 lines','Local config · keymaps.lua'],['n','Ctrl-h','Go to left window','Local config · keymaps.lua'],['n','Ctrl-j','Go to lower window','Local config · keymaps.lua'],['n','Ctrl-k','Go to upper window','Local config · keymaps.lua'],['n','Ctrl-l','Go to right window','Local config · keymaps.lua'],['n','Space v','Visual block mode','Local config · keymaps.lua'],['n','F7','Next diff','Local config · keymaps.lua'],['n','F19','Previous diff','Local config · keymaps.lua'],['n','Space u m','Toggle Markdown render','Local config · render-markdown.nvim']],
- lazy:[['n','Space Space','Find files','LazyVim · Snacks picker'],['n','Space /','Grep in files','LazyVim · Snacks picker'],['n','Space e','File explorer','LazyVim · Snacks explorer'],['n','Space f f','Find files','LazyVim · picker'],['n','Space f r','Recent files','LazyVim · picker'],['n','Space f b','Buffers','LazyVim · picker'],['n','Space s g','Live grep','LazyVim · picker'],['n','Space s r','Resume picker','LazyVim · picker'],['n','g d','Go to definition','LazyVim · LSP'],['n','g r','References','LazyVim · LSP'],['n','K','Hover documentation','LazyVim · LSP'],['n','Space c a','Code action','LazyVim · LSP'],['n','Space c r','Rename symbol','LazyVim · LSP'],['n','] d','Next diagnostic','LazyVim · diagnostics'],['n','[ d','Previous diagnostic','LazyVim · diagnostics'],['n','] h','Next git hunk','LazyVim · gitsigns'],['n','[ h','Previous git hunk','LazyVim · gitsigns']],
- native:[['n','i / a / o','Enter Insert mode','Neovim native'],['i','Esc','Return to Normal mode','Neovim native'],['n','v / V / Ctrl-v','Select character / line / block','Neovim native'],['o','d / c / y','Delete / change / yank operator','Neovim native'],['o','w / i w / a w','Word motion / text objects','Neovim native'],['c',':','Ex command-line','Neovim native'],['c','/','Search command-line','Neovim native'],['n','u / Ctrl-r','Undo / redo','Neovim native'],['n','dd / yy / p','Delete line / yank line / put','Neovim native']]
-};
-const labels={n:'Normal',v:'Visual',i:'Insert',o:'Operator',c:'Command'}; let mode='all'; const esc=s=>s.replace(/[&<>]/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[x]));
-function render(){const q=document.querySelector('#search').value.toLowerCase(); for(const [group,items] of Object.entries(data)){const el=document.querySelector('#'+group); el.innerHTML=items.map(([m,k,a,src])=>{const show=(mode==='all'||mode===m)&&(q===''||(k+' '+a+' '+src).toLowerCase().includes(q)); return `<article class="card ${group==='local'?'local':group==='lazy'?'lazy':'native'}" ${show?'':'hidden'}><div class="keys">${k.split(' / ').map(x=>`<kbd>${esc(x)}</kbd>`).join('')}</div><div class="action">${esc(a)}</div><div class="meta"><span class="mode">${labels[m]}</span> · ${esc(src)}</div></article>`}).join(''); }}
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-mode]').forEach(x=>x.classList.remove('active')); b.classList.add('active'); mode=b.dataset.mode; render()}); document.querySelector('#search').oninput=render; render();
+(() => {
+  const labels = { n: 'Normal', v: 'Visual', i: 'Insert', o: 'Operator', c: 'Command' };
+  const sourceLabels = { local: 'Local', lazy: 'LazyVim', native: 'Neovim Native' };
+  const layerLabels = { base: 'Base', windows: 'Window navigation', 'local-leader': 'Local leader', diagnostics: 'Diagnostics', git: 'Git hunks', 'leader-files': 'Leader · files', 'leader-search': 'Leader · search', 'leader-code': 'Leader · code', 'leader-space': 'Leader · top-level' };
+  const keys = new Map([...document.querySelectorAll('#keyboard [data-key]')].map(key => [key.dataset.key, key]));
+  const state = { source: 'local', mode: 'n', layer: 'base' };
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const entry = (source, mode, layer, key, label, action, sequence) => ({ source, mode, layer, key, label, action, sequence });
+  const mappings = [
+    entry('local', 'n', 'base', 'h', ['H'], 'Move to the first non-blank character', 'H'),
+    entry('local', 'n', 'base', 'l', ['L'], 'Move to the end of the line', 'L'),
+    entry('local', 'v', 'base', 'h', ['H'], 'Move selection to the first non-blank character', 'H'),
+    entry('local', 'v', 'base', 'l', ['L'], 'Move selection to the end of the line', 'L'),
+    entry('local', 'n', 'base', 'j', ['J', 'down 5'], 'Move down 5 lines', 'J'),
+    entry('local', 'n', 'base', 'k', ['K', 'up 5'], 'Move up 5 lines', 'K'),
+    entry('local', 'n', 'windows', 'h', ['Ctrl-h'], 'Go to the left window', 'Ctrl-h'),
+    entry('local', 'n', 'windows', 'j', ['Ctrl-j'], 'Go to the lower window', 'Ctrl-j'),
+    entry('local', 'n', 'windows', 'k', ['Ctrl-k'], 'Go to the upper window', 'Ctrl-k'),
+    entry('local', 'n', 'windows', 'l', ['Ctrl-l'], 'Go to the right window', 'Ctrl-l'),
+    entry('local', 'n', 'local-leader', 'v', ['leader v'], 'Enter Visual Block mode', 'Space v'),
+    entry('local', 'n', 'base', 'f7', ['F7', 'next diff'], 'Show the next diff', 'F7'),
+    entry('local', 'n', 'base', 'f12', ['F19', 'prev diff'], 'Show the previous diff; configured as F19', 'F19'),
+    entry('local', 'n', 'local-leader', 'm', ['leader u m'], 'Toggle Markdown rendering', 'Space u m'),
+
+    entry('lazy', 'n', 'base', 'space', ['leader'], 'Open the LazyVim leader namespace', 'Space'),
+    entry('lazy', 'n', 'base', 'g', ['g d'], 'Go to definition', 'g d'),
+    entry('lazy', 'n', 'base', 'k', ['K'], 'Show hover documentation', 'K'),
+    entry('lazy', 'n', 'diagnostics', 'right-bracket', ['] d'], 'Go to the next diagnostic', '] d'),
+    entry('lazy', 'n', 'diagnostics', 'left-bracket', ['[ d'], 'Go to the previous diagnostic', '[ d'),
+    entry('lazy', 'n', 'git', 'right-bracket', ['] h'], 'Go to the next git hunk', '] h'),
+    entry('lazy', 'n', 'git', 'left-bracket', ['[ h'], 'Go to the previous git hunk', '[ h'),
+    entry('lazy', 'n', 'leader-files', 'f', ['f f'], 'Find files with the Snacks picker', 'Space f f'),
+    entry('lazy', 'n', 'leader-files', 'r', ['f r'], 'Open recent files with the picker', 'Space f r'),
+    entry('lazy', 'n', 'leader-files', 'b', ['f b'], 'List open buffers with the picker', 'Space f b'),
+    entry('lazy', 'n', 'leader-files', 'e', ['e'], 'Open the Snacks file explorer', 'Space e'),
+    entry('lazy', 'n', 'leader-search', 'slash', ['/', 'grep'], 'Grep in files with the Snacks picker', 'Space /'),
+    entry('lazy', 'n', 'leader-search', 'g', ['s g'], 'Live grep with the picker', 'Space s g'),
+    entry('lazy', 'n', 'leader-search', 'r', ['s r'], 'Resume the last picker', 'Space s r'),
+    entry('lazy', 'n', 'leader-code', 'a', ['c a'], 'Run a code action', 'Space c a'),
+    entry('lazy', 'n', 'leader-code', 'r', ['c r'], 'Rename the symbol under the cursor', 'Space c r'),
+    entry('lazy', 'n', 'leader-space', 'space', ['space', 'find'], 'Find files with the picker', 'Space Space'),
+
+    entry('native', 'n', 'base', 'i', ['i'], 'Enter Insert mode before the cursor', 'i'),
+    entry('native', 'n', 'base', 'a', ['a'], 'Enter Insert mode after the cursor', 'a'),
+    entry('native', 'n', 'base', 'o', ['o'], 'Open a new line below and Insert', 'o'),
+    entry('native', 'n', 'base', 'v', ['v'], 'Start characterwise Visual mode', 'v'),
+    entry('native', 'n', 'base', 'u', ['u'], 'Undo the last change', 'u'),
+    entry('native', 'n', 'base', 'r', ['Ctrl-r'], 'Redo the last undone change', 'Ctrl-r'),
+    entry('native', 'n', 'base', 'd', ['d'], 'Start the delete operator', 'd'),
+    entry('native', 'n', 'base', 'y', ['y'], 'Start the yank operator', 'y'),
+    entry('native', 'v', 'base', 'v', ['v'], 'Exit Visual mode', 'v'),
+    entry('native', 'v', 'base', 'x', ['x'], 'Delete the selected text', 'x'),
+    entry('native', 'i', 'base', 'esc', ['esc'], 'Return to Normal mode', 'Esc'),
+    entry('native', 'o', 'base', 'w', ['w'], 'Move to the next word as an operator motion', 'w'),
+    entry('native', 'o', 'base', 'd', ['d'], 'Delete through the following motion', 'd'),
+    entry('native', 'c', 'base', 'semicolon', [':'], 'Open the Ex command-line', ':'),
+    entry('native', 'c', 'base', 'slash', ['/'], 'Open the search command-line', '/'),
+  ];
+
+  const layersFor = () => [...new Set(mappings.filter(item => item.source === state.source && item.mode === state.mode).map(item => item.layer))];
+  const layerSelect = document.querySelector('#layer');
+  const refreshLayers = () => {
+    const available = layersFor();
+    if (!available.includes(state.layer)) state.layer = available[0] || 'base';
+    layerSelect.innerHTML = available.map(layer => `<option value="${esc(layer)}">${esc(layerLabels[layer] || layer)}</option>`).join('');
+    layerSelect.value = state.layer;
+  };
+  const search = document.querySelector('#search');
+  const render = () => {
+    document.querySelectorAll('#keyboard [data-key]').forEach(key => {
+      key.innerHTML = key.dataset.default === ' ' ? '' : key.dataset.default;
+      key.classList.remove('mapped', 'search-dim', 'search-match');
+      key.removeAttribute('title');
+      key.removeAttribute('aria-label');
+    });
+    const query = search.value.trim().toLowerCase();
+    const active = mappings.filter(item => item.source === state.source && item.mode === state.mode && (item.layer === state.layer || (query && `${item.sequence} ${item.action} ${sourceLabels[item.source]}`.toLowerCase().includes(query))));
+    const visible = active.filter(item => !query || `${item.sequence} ${item.action} ${sourceLabels[item.source]}`.toLowerCase().includes(query));
+    active.forEach(item => {
+      const key = keys.get(item.key);
+      if (!key) return;
+      key.classList.add('mapped');
+      if (query && visible.includes(item)) key.classList.add('search-match');
+      if (query && !visible.includes(item)) key.classList.add('search-dim');
+      key.innerHTML = `<span class="map-label">${item.label.map(line => `<span class="map-line">${esc(line)}</span>`).join('')}</span>`;
+      key.title = `${item.sequence}: ${item.action} · ${sourceLabels[item.source]}`;
+      key.setAttribute('aria-label', `${item.sequence}: ${item.action}. Source: ${sourceLabels[item.source]}. Mode: ${labels[item.mode]}.`);
+    });
+    document.querySelector('#state').textContent = `${sourceLabels[state.source]} · ${labels[state.mode]} · ${layerLabels[state.layer] || state.layer}`;
+    const matches = document.querySelector('#matches');
+    if (query) matches.textContent = ` ${visible.length} match${visible.length === 1 ? '' : 'es'}${visible.length ? ': ' + visible.map(item => `${item.sequence} - ${item.action}`).join(' | ') : ''}`;
+    else matches.textContent = ` ${active.length} shortcut${active.length === 1 ? '' : 's'} in this layer`;
+  };
+
+  document.querySelector('#source').addEventListener('change', event => {
+    state.source = event.target.value;
+    refreshLayers();
+    render();
+  });
+  document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-mode]').forEach(item => item.classList.remove('active'));
+    button.classList.add('active');
+    state.mode = button.dataset.mode;
+    refreshLayers();
+    render();
+  }));
+  layerSelect.addEventListener('change', event => {
+    state.layer = event.target.value;
+    render();
+  });
+  search.addEventListener('input', render);
+  refreshLayers();
+  render();
+})();
 </script>
-</body></html>
+</body>
+</html>

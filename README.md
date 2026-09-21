@@ -1,6 +1,12 @@
 # LazyVim Keyboard Shortcut Map
 
-An independent, offline HTML reference for the LazyVim/Neovim setup represented by this project. Open `index.html` directly in a browser - no build step, server, or network connection is required.
+An independent, offline HTML reference for the LazyVim and Neovim setup represented by this project. Open `index.html` directly in a browser - no build step, server, or network connection is required.
+
+## Reference implementation
+
+The keyboard uses the physical DOM order, IDs, structure classes, geometry, font, and aluminum texture from the confirmed `mac-keyboard-shortcut` reference implementation. The base stylesheet at `css/stijl.css` is kept byte-identical to that reference. LazyVim controls and state labels live only in `css/lazyvim.css`.
+
+The default state always restores the standard physical key legends. Selecting a source, mode, or layer adds short labels to the relevant physical keys; complete actions remain in each key's `title` and accessible label.
 
 ## Data source
 
@@ -11,14 +17,16 @@ The local entries were transcribed from the active configuration snapshot:
 - `lua/config/options.lua`: space is both `leader` and `localleader`.
 - `lua/config/lazy.lua`, `lazy-lock.json`, and `lazyvim.json`: enabled plugin context and the pinned LazyVim revision.
 
-The page intentionally separates **Local config**, **LazyVim core defaults**, and **Neovim native grammar**. Mode labels mean Normal (`n`), Insert (`i`), Visual (`v`), Operator-pending (`o`), and Command-line (`c`). The source snapshot contains no explicit Insert, Operator-pending, or Command-line custom mappings; those sections show native modal behavior, not invented local bindings.
+The page separates **Local**, **LazyVim**, and **Neovim Native** mappings. Mode labels mean Normal (`n`), Insert (`i`), Visual (`v`), Operator-pending (`o`), and Command-line (`c`). The source snapshot contains no explicit Local Insert, Operator-pending, or Command-line custom mappings; native modal behavior is shown under Neovim Native instead of being presented as Local configuration.
+
+The Source, Mode, Layer, and Search controls operate on the same keyboard. Layers keep longer leader sequences unambiguous without changing the keyboard geometry.
 
 ## Updating the map
 
-1. Inspect the current Neovim config and update the data arrays in the inline script in `index.html`.
+1. Inspect the current Neovim config and update the `mappings` array in the inline script in `index.html`.
 2. Re-check `lua/config/keymaps.lua`, active plugin specs, leader/localleader values, and `lazy-lock.json`.
-3. Update the pinned revision and snapshot note in this README and the page footer.
-4. Open `index.html` locally and test search plus every mode filter at desktop and narrow mobile widths.
+3. Keep the standard key DOM and `css/stijl.css` unchanged. Put LazyVim-specific presentation changes in `css/lazyvim.css` only.
+4. Open `index.html` locally and test every source, mode, layer, and search state at desktop and narrow mobile widths.
 
 Keep the page data-focused: do not copy private machine paths, secrets, or unrelated personal configuration into this repository.
 
