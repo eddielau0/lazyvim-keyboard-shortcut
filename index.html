@@ -49,7 +49,7 @@
     <li id="f10" data-key="f10" data-default="F10">F10</li>
     <li id="f11" data-key="f11" data-default="F11">F11</li>
     <li id="f12" data-key="f12" data-default="F12">F12</li>
-    <li data-key="eject" data-default=""></li>
+    <li id="eject" data-key="eject" data-default=""></li>
 
     <li id="grave" data-key="grave" data-default="~`"><span>~</span>`</li>
     <li id="1" data-key="1" data-default="!1"><span>!</span>1</li>
@@ -127,60 +127,66 @@
 (() => {
   const labels = { n: 'Normal', v: 'Visual', i: 'Insert', o: 'Operator', c: 'Command' };
   const sourceLabels = { local: 'Local', lazy: 'LazyVim', native: 'Neovim Native' };
-  const layerLabels = { base: 'Base', windows: 'Window navigation', 'local-leader': 'Local leader', diagnostics: 'Diagnostics', git: 'Git hunks', 'leader-files': 'Leader · files', 'leader-search': 'Leader · search', 'leader-code': 'Leader · code', 'leader-space': 'Leader · top-level' };
+  const layerLabels = { base: 'Base', windows: 'Window navigation', 'local-leader': 'Local leader', diagnostics: 'Diagnostics', git: 'Git hunks', lsp: 'LSP', visual: 'Visual modes', operators: 'Operators', 'text-objects': 'Text objects', lines: 'Line operations', 'leader-files': 'Leader · files', 'leader-search': 'Leader · search', 'leader-code': 'Leader · code', 'leader-space': 'Leader · top-level' };
   const keys = new Map([...document.querySelectorAll('#keyboard [data-key]')].map(key => [key.dataset.key, key]));
+  const canonicalMarkup = new Map([...keys].map(([keyName, key]) => [keyName, key.innerHTML]));
   const state = { source: 'local', mode: 'n', layer: 'base' };
   const esc = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const entry = (source, mode, layer, key, label, action, sequence) => ({ source, mode, layer, key, label, action, sequence });
   const mappings = [
-    entry('local', 'n', 'base', 'h', ['H'], 'Move to the first non-blank character', 'H'),
-    entry('local', 'n', 'base', 'l', ['L'], 'Move to the end of the line', 'L'),
-    entry('local', 'v', 'base', 'h', ['H'], 'Move selection to the first non-blank character', 'H'),
-    entry('local', 'v', 'base', 'l', ['L'], 'Move selection to the end of the line', 'L'),
-    entry('local', 'n', 'base', 'j', ['J', 'down 5'], 'Move down 5 lines', 'J'),
-    entry('local', 'n', 'base', 'k', ['K', 'up 5'], 'Move up 5 lines', 'K'),
-    entry('local', 'n', 'windows', 'h', ['Ctrl-h'], 'Go to the left window', 'Ctrl-h'),
-    entry('local', 'n', 'windows', 'j', ['Ctrl-j'], 'Go to the lower window', 'Ctrl-j'),
-    entry('local', 'n', 'windows', 'k', ['Ctrl-k'], 'Go to the upper window', 'Ctrl-k'),
-    entry('local', 'n', 'windows', 'l', ['Ctrl-l'], 'Go to the right window', 'Ctrl-l'),
-    entry('local', 'n', 'local-leader', 'v', ['leader v'], 'Enter Visual Block mode', 'Space v'),
-    entry('local', 'n', 'base', 'f7', ['F7', 'next diff'], 'Show the next diff', 'F7'),
-    entry('local', 'n', 'base', 'f12', ['F19', 'prev diff'], 'Show the previous diff; configured as F19', 'F19'),
-    entry('local', 'n', 'local-leader', 'm', ['leader u m'], 'Toggle Markdown rendering', 'Space u m'),
+    entry('local', 'n', 'base', 'h', ['First char', 'H'], 'Move to the first non-blank character', 'H'),
+    entry('local', 'n', 'base', 'l', ['Line end', 'L'], 'Move to the end of the line', 'L'),
+    entry('local', 'v', 'base', 'h', ['First char', 'H'], 'Move selection to the first non-blank character', 'H'),
+    entry('local', 'v', 'base', 'l', ['Line end', 'L'], 'Move selection to the end of the line', 'L'),
+    entry('local', 'n', 'base', 'j', ['Down 5', 'J'], 'Move down 5 lines', 'J'),
+    entry('local', 'n', 'base', 'k', ['Up 5', 'K'], 'Move up 5 lines', 'K'),
+    entry('local', 'n', 'windows', 'h', ['Left win', 'Ctrl-h'], 'Go to the left window', 'Ctrl-h'),
+    entry('local', 'n', 'windows', 'j', ['Lower win', 'Ctrl-j'], 'Go to the lower window', 'Ctrl-j'),
+    entry('local', 'n', 'windows', 'k', ['Upper win', 'Ctrl-k'], 'Go to the upper window', 'Ctrl-k'),
+    entry('local', 'n', 'windows', 'l', ['Right win', 'Ctrl-l'], 'Go to the right window', 'Ctrl-l'),
+    entry('local', 'n', 'local-leader', 'v', ['V block', 'Space v'], 'Enter Visual Block mode', 'Space v'),
+    entry('local', 'n', 'base', 'f7', ['Next diff', 'F7'], 'Show the next diff', 'F7'),
+    entry('local', 'n', 'base', 'eject', ['Prev diff', 'F19'], 'Show the previous diff; configured as F19', 'F19'),
+    entry('local', 'n', 'local-leader', 'm', ['Markdown', 'Space u m'], 'Toggle Markdown rendering', 'Space u m'),
 
-    entry('lazy', 'n', 'base', 'space', ['leader'], 'Open the LazyVim leader namespace', 'Space'),
-    entry('lazy', 'n', 'base', 'g', ['g d'], 'Go to definition', 'g d'),
-    entry('lazy', 'n', 'base', 'k', ['K'], 'Show hover documentation', 'K'),
-    entry('lazy', 'n', 'diagnostics', 'right-bracket', ['] d'], 'Go to the next diagnostic', '] d'),
-    entry('lazy', 'n', 'diagnostics', 'left-bracket', ['[ d'], 'Go to the previous diagnostic', '[ d'),
-    entry('lazy', 'n', 'git', 'right-bracket', ['] h'], 'Go to the next git hunk', '] h'),
-    entry('lazy', 'n', 'git', 'left-bracket', ['[ h'], 'Go to the previous git hunk', '[ h'),
-    entry('lazy', 'n', 'leader-files', 'f', ['f f'], 'Find files with the Snacks picker', 'Space f f'),
-    entry('lazy', 'n', 'leader-files', 'r', ['f r'], 'Open recent files with the picker', 'Space f r'),
-    entry('lazy', 'n', 'leader-files', 'b', ['f b'], 'List open buffers with the picker', 'Space f b'),
-    entry('lazy', 'n', 'leader-files', 'e', ['e'], 'Open the Snacks file explorer', 'Space e'),
-    entry('lazy', 'n', 'leader-search', 'slash', ['/', 'grep'], 'Grep in files with the Snacks picker', 'Space /'),
-    entry('lazy', 'n', 'leader-search', 'g', ['s g'], 'Live grep with the picker', 'Space s g'),
-    entry('lazy', 'n', 'leader-search', 'r', ['s r'], 'Resume the last picker', 'Space s r'),
-    entry('lazy', 'n', 'leader-code', 'a', ['c a'], 'Run a code action', 'Space c a'),
-    entry('lazy', 'n', 'leader-code', 'r', ['c r'], 'Rename the symbol under the cursor', 'Space c r'),
-    entry('lazy', 'n', 'leader-space', 'space', ['space', 'find'], 'Find files with the picker', 'Space Space'),
+    entry('lazy', 'n', 'base', 'space', ['Leader', 'Space'], 'Open the LazyVim leader namespace', 'Space'),
+    entry('lazy', 'n', 'base', 'k', ['Hover', 'K'], 'Show hover documentation', 'K'),
+    entry('lazy', 'n', 'lsp', 'd', ['Definition', 'g d'], 'Go to definition', 'g d'),
+    entry('lazy', 'n', 'lsp', 'r', ['Refs', 'g r'], 'Show references', 'g r'),
+    entry('lazy', 'n', 'diagnostics', 'right-bracket', ['Next diag', '] d'], 'Go to the next diagnostic', '] d'),
+    entry('lazy', 'n', 'diagnostics', 'left-bracket', ['Prev diag', '[ d'], 'Go to the previous diagnostic', '[ d'),
+    entry('lazy', 'n', 'git', 'right-bracket', ['Next hunk', '] h'], 'Go to the next git hunk', '] h'),
+    entry('lazy', 'n', 'git', 'left-bracket', ['Prev hunk', '[ h'], 'Go to the previous git hunk', '[ h'),
+    entry('lazy', 'n', 'leader-files', 'f', ['Find files', 'Space f f'], 'Find files with the Snacks picker', 'Space f f'),
+    entry('lazy', 'n', 'leader-files', 'r', ['Recent files', 'Space f r'], 'Open recent files with the picker', 'Space f r'),
+    entry('lazy', 'n', 'leader-files', 'b', ['Buffers', 'Space f b'], 'List open buffers with the picker', 'Space f b'),
+    entry('lazy', 'n', 'leader-files', 'e', ['Explorer', 'Space e'], 'Open the Snacks file explorer', 'Space e'),
+    entry('lazy', 'n', 'leader-search', 'slash', ['Grep files', 'Space /'], 'Grep in files with the Snacks picker', 'Space /'),
+    entry('lazy', 'n', 'leader-search', 'g', ['Live grep', 'Space s g'], 'Live grep with the picker', 'Space s g'),
+    entry('lazy', 'n', 'leader-search', 'r', ['Resume', 'Space s r'], 'Resume the last picker', 'Space s r'),
+    entry('lazy', 'n', 'leader-code', 'a', ['Code', 'Space c a'], 'Run a code action', 'Space c a'),
+    entry('lazy', 'n', 'leader-code', 'r', ['Rename', 'Space c r'], 'Rename the symbol under the cursor', 'Space c r'),
+    entry('lazy', 'n', 'leader-space', 'space', ['Find files', 'Space Space'], 'Find files with the picker', 'Space Space'),
 
-    entry('native', 'n', 'base', 'i', ['i'], 'Enter Insert mode before the cursor', 'i'),
-    entry('native', 'n', 'base', 'a', ['a'], 'Enter Insert mode after the cursor', 'a'),
-    entry('native', 'n', 'base', 'o', ['o'], 'Open a new line below and Insert', 'o'),
-    entry('native', 'n', 'base', 'v', ['v'], 'Start characterwise Visual mode', 'v'),
-    entry('native', 'n', 'base', 'u', ['u'], 'Undo the last change', 'u'),
-    entry('native', 'n', 'base', 'r', ['Ctrl-r'], 'Redo the last undone change', 'Ctrl-r'),
-    entry('native', 'n', 'base', 'd', ['d'], 'Start the delete operator', 'd'),
-    entry('native', 'n', 'base', 'y', ['y'], 'Start the yank operator', 'y'),
-    entry('native', 'v', 'base', 'v', ['v'], 'Exit Visual mode', 'v'),
-    entry('native', 'v', 'base', 'x', ['x'], 'Delete the selected text', 'x'),
-    entry('native', 'i', 'base', 'esc', ['esc'], 'Return to Normal mode', 'Esc'),
-    entry('native', 'o', 'base', 'w', ['w'], 'Move to the next word as an operator motion', 'w'),
-    entry('native', 'o', 'base', 'd', ['d'], 'Delete through the following motion', 'd'),
-    entry('native', 'c', 'base', 'semicolon', [':'], 'Open the Ex command-line', ':'),
-    entry('native', 'c', 'base', 'slash', ['/'], 'Open the search command-line', '/'),
+    entry('native', 'n', 'base', 'i', ['Insert', 'i'], 'Enter Insert mode before the cursor', 'i'),
+    entry('native', 'n', 'base', 'a', ['Append', 'a'], 'Enter Insert mode after the cursor', 'a'),
+    entry('native', 'n', 'base', 'o', ['Open line', 'o'], 'Open a new line below and Insert', 'o'),
+    entry('native', 'n', 'base', 'u', ['Undo', 'u'], 'Undo the last change', 'u'),
+    entry('native', 'n', 'base', 'r', ['Redo', 'Ctrl-r'], 'Redo the last undone change', 'Ctrl-r'),
+    entry('native', 'v', 'visual', 'v', ['Visual', 'v / V', 'Ctrl-v'], 'Select characterwise, linewise, or blockwise', 'v / V / Ctrl-v'),
+    entry('native', 'v', 'base', 'x', ['Delete', 'x'], 'Delete the selected text', 'x'),
+    entry('native', 'i', 'base', 'esc', ['Normal mode', 'Esc'], 'Return to Normal mode', 'Esc'),
+    entry('native', 'o', 'operators', 'd', ['Delete', 'd'], 'Start the delete operator', 'd'),
+    entry('native', 'o', 'operators', 'c', ['Change', 'c'], 'Start the change operator', 'c'),
+    entry('native', 'o', 'operators', 'y', ['Yank', 'y'], 'Start the yank operator', 'y'),
+    entry('native', 'o', 'text-objects', 'w', ['Word', 'w'], 'Move by a word as an operator motion', 'w'),
+    entry('native', 'o', 'text-objects', 'i', ['Inner', 'i w'], 'Select an inner word text object', 'i w'),
+    entry('native', 'o', 'text-objects', 'a', ['Around', 'a w'], 'Select an around-word text object', 'a w'),
+    entry('native', 'n', 'lines', 'd', ['Del line', 'dd'], 'Delete the current line', 'dd'),
+    entry('native', 'n', 'lines', 'y', ['Yank line', 'yy'], 'Yank the current line', 'yy'),
+    entry('native', 'n', 'lines', 'p', ['Put line', 'p'], 'Put the yanked text after the cursor', 'p'),
+    entry('native', 'c', 'base', 'semicolon', ['Command', ':'], 'Open the Ex command-line', ':'),
+    entry('native', 'c', 'base', 'slash', ['Search', '/'], 'Open the search command-line', '/'),
   ];
 
   const layersFor = () => [...new Set(mappings.filter(item => item.source === state.source && item.mode === state.mode).map(item => item.layer))];
@@ -194,7 +200,7 @@
   const search = document.querySelector('#search');
   const render = () => {
     document.querySelectorAll('#keyboard [data-key]').forEach(key => {
-      key.innerHTML = key.dataset.default === ' ' ? '' : key.dataset.default;
+      key.innerHTML = canonicalMarkup.get(key.dataset.key);
       key.classList.remove('mapped', 'search-dim', 'search-match');
       key.removeAttribute('title');
       key.removeAttribute('aria-label');
